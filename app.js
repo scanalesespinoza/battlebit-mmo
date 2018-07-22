@@ -25,7 +25,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 var serv = require('http').Server(app);
-
+var io = require('socket.io')(serv,{});
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use('/', express.static(path.join(__dirname, 'public')));
@@ -40,7 +40,7 @@ module.exports = app;
 
 var SOCKET_LIST = {};
 
-var io = require('socket.io')(serv,{});
+
 io.sockets.on('connection',function(socket){
 	console.log('new incoming connection:');
 
