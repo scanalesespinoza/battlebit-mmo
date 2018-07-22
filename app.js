@@ -35,4 +35,22 @@ app.use('/api/greeting', (request, response) => {
   response.send({content: `Hello, ${name || 'World!'}`});
 });
 
+var SOCKET_LIST = {};
+
+var io = require('socket.io')(serv,{});
+io.sockets.on('connection',function(socket){
+	console.log('new incoming connection:');
+
+	socket.id = Math.random();
+	socket.x = 0;
+	socket.y = 0;
+
+	SOCKET_LIST[socket.id] = socket;
+
+	console.log('new client:'+socket.id);
+
+	socket.on('disconnect',function(){
+		delete SOCKET_LIST[socket.id];
+	});
+  
 module.exports = app;
