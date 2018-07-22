@@ -34,6 +34,7 @@ app.use('/api/greeting', (request, response) => {
   const name = request.query ? request.query.name : undefined;
   response.send({content: `Hello, ${name || 'World!'}`});
 });
+module.exports = app;
 
 var SOCKET_LIST = {};
 
@@ -52,5 +53,25 @@ io.sockets.on('connection',function(socket){
 	socket.on('disconnect',function(){
 		delete SOCKET_LIST[socket.id];
 	});
-  
-module.exports = app;
+});
+
+setInterval(function(){
+	console.log('Updating positions')
+	var pack = [];
+	for(var i in SOCKET_LIST){
+		var socket = SOCKET_LIST[i];
+		socket.x++;
+		socket.y++;
+
+		pack.push({
+                        x:socket.x,
+                        y:socket.y
+                });
+	}
+	for(var i in SOCKET_LIST){
+		var socket = SOCKET_LIST[i];
+		console.log('emiting to:'+socket.id);
+		console.log('pack size:'+pack.length);
+		socket.emit('newPosition',pack);
+	}
+},1000/25);
